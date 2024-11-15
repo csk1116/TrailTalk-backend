@@ -23,6 +23,9 @@ router.post('/', upload.single('image'), async (req, res) => {
     try {
         const { title, content, imageUrl, tags, userId, secretKey } = req.body;
 
+        // Parse tags if they are sent as a JSON string
+        const parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+
         // Validation
         if (!title || title.trim() === '') {
             return res.status(400).json({ success: false, error: 'Title is required' });
@@ -46,7 +49,7 @@ router.post('/', upload.single('image'), async (req, res) => {
             createdAt: new Date(),
             upvotes: 0,
             comments: [],
-            tags: tags || [],
+            tags: parsedTags || [],
             userId: userId.trim(),
             secretKey: secretKey.trim(),
             repostId: uuidv4()
@@ -95,6 +98,10 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', upload.single('image'), async (req, res) => {
     try {
         const { title, content, imageUrl, tags, userId, secretKey } = req.body;
+
+        // Parse tags if they are sent as a JSON string
+        const parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+
         const db = getDB();
 
         // Validate ObjectId
@@ -118,7 +125,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
             content: content ? content.trim() : post.content,
             imageUrl: imageUrl || post.imageUrl,
             localImagePath: req.file ? `/uploads/${req.file.filename}` : post.localImagePath, // Update local image path if new file is uploaded
-            tags: tags || post.tags,
+            tags: parsedTags || post.tags,
             userId: userId ? userId.trim() : post.userId,
             secretKey: secretKey.trim(),
             updatedAt: new Date()
