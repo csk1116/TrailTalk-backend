@@ -57,6 +57,14 @@ router.post('/', upload.single('image'), async (req, res) => {
 
         const db = getDB();
         const result = await db.collection('posts').insertOne(newPost);
+        
+        // Debugging statement to check the structure of result
+        console.log('Insert result:', result);
+
+        if (!result.ops || result.ops.length === 0) {
+            return res.status(500).json({ success: false, error: 'Failed to create post' });
+        }
+        
         res.status(201).json({ success: true, data: result.ops[0] });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
