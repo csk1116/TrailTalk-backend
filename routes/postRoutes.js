@@ -92,7 +92,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a post by ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('image'), async (req, res) => {
     try {
         const { title, content, imageUrl, tags, userId, secretKey } = req.body;
         const db = getDB();
@@ -117,6 +117,7 @@ router.put('/:id', async (req, res) => {
             title: title ? title.trim() : post.title,
             content: content ? content.trim() : post.content,
             imageUrl: imageUrl || post.imageUrl,
+            localImagePath: req.file ? `/uploads/${req.file.filename}` : post.localImagePath, // Update local image path if new file is uploaded
             tags: tags || post.tags,
             userId: userId ? userId.trim() : post.userId,
             secretKey: secretKey.trim(),
@@ -159,6 +160,32 @@ router.delete('/:id', async (req, res) => {
         // Delete post
         await db.collection('posts').deleteOne({ _id: new ObjectId(req.params.id) });
         res.json({ success: true, message: 'Post deleted' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Upvote a post
+router.post('/:id/upvote', async (req, res) => {
+    try {
+        const db = getDB();
+
+        // Validate ObjectId
+        if (!ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, error: 'Invalid post ID' });
+        }
+
+        const result = await db.collection('posts').findOneAndUpdate(
+            { _id: new ObjectId(req.params.id) },
+            { $inc: { upvotes: 1 } },
+            { returnDocument: 'after' }
+        );
+
+        if (!result.value) {
+            return res.status(404).json({ success: false, error: 'Post not found' });
+        }
+
+        res.json({ success: true, data: result.value });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
