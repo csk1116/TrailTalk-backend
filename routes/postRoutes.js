@@ -36,7 +36,7 @@ router.post('/', upload.single('image'), async (req, res) => {
         if (!secretKey || secretKey.trim() === '') {
             return res.status(400).json({ success: false, error: 'Secret key is required' });
         }
-        if (tags && !validateTags(tags)) {
+        if (parsedTags && !validateTags(parsedTags)) {
             return res.status(400).json({ success: false, error: 'Invalid tags provided' });
         }
 
