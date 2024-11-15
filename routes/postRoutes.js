@@ -61,11 +61,14 @@ router.post('/', upload.single('image'), async (req, res) => {
         // Debugging statement to check the structure of result
         console.log('Insert result:', result);
 
-        if (!result.ops || result.ops.length === 0) {
+        if (!result.acknowledged) {
             return res.status(500).json({ success: false, error: 'Failed to create post' });
         }
-        
-        res.status(201).json({ success: true, data: result.ops[0] });
+
+        // Fetch the inserted document using the insertedId
+        const insertedPost = await db.collection('posts').findOne({ _id: result.insertedId });
+
+        res.status(201).json({ success: true, data: insertedPost });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
