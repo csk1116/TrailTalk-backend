@@ -210,3 +210,36 @@ router.post('/:id/upvote', async (req, res) => {
 });
 
 module.exports = router;
+
+// Add a comment to a post
+router.post('/:id/comments', async (req, res) => {
+    try {
+      const { userId, comment } = req.body;
+      const db = getDB();
+  
+      // Validate ObjectId
+      if (!ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ success: false, error: 'Invalid post ID' });
+      }
+  
+      const post = await db.collection('posts').findOne({ _id: new ObjectId(req.params.id) });
+      if (!post) {
+        return res.status(404).json({ success: false, error: 'Post not found' });
+      }
+  
+      const newComment = {
+        userId,
+        comment,
+        createdAt: new Date(),
+      };
+  
+      const result = await db.collection('posts').updateOne(
+        { _id: new ObjectId(req.params.id) },
+        { $push: { comments: newComment } }
+      );
+  
+      res.status(201).json({ success: true, data: newComment });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
