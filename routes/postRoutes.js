@@ -148,7 +148,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
             { returnDocument: 'after' }
         );
 
-        res.json({ success: true, data: result.value });
+        res.json({ success: true, data: result });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -201,7 +201,7 @@ router.post('/:id/upvote', async (req, res) => {
 
         console.log('Upvote result:', result);
 
-        if (!result.value) {
+        if (!result) {
             return res.status(404).json({ success: false, error: 'Post not found' });
         }
 
@@ -237,6 +237,10 @@ router.post('/:id/comments', async (req, res) => {
         { _id: new ObjectId(req.params.id) },
         { $push: { comments: newComment } }
       );
+
+      if (!result) {
+        return res.status(404).json({ success: false, error: 'Post not found' });
+     }
   
       res.status(201).json({ success: true, data: newComment });
     } catch (error) {
