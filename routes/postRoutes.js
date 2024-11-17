@@ -199,6 +199,8 @@ router.post('/:id/upvote', async (req, res) => {
             { returnDocument: 'after' }
         );
 
+        console.log('Upvote result:', result);
+
         if (!result.value) {
             return res.status(404).json({ success: false, error: 'Post not found' });
         }
@@ -208,8 +210,6 @@ router.post('/:id/upvote', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
-module.exports = router;
 
 // Add a comment to a post
 router.post('/:id/comments', async (req, res) => {
@@ -243,3 +243,5 @@ router.post('/:id/comments', async (req, res) => {
       res.status(500).json({ success: false, error: error.message });
     }
   });
+
+  module.exports = router;
