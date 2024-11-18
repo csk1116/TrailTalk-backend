@@ -52,7 +52,7 @@ router.post('/', upload.single('image'), async (req, res) => {
             tags: parsedTags || [],
             userId: userId.trim(),
             secretKey: secretKey.trim(),
-            repostId: repostId ? new ObjectId(repostId) : null,
+            repostId: uuidv4()
         };
 
         const db = getDB();
@@ -99,13 +99,6 @@ router.get('/:id', async (req, res) => {
         if (!post) {
             return res.status(404).json({ success: false, error: 'Post not found' });
         }
-
-         // If the post is a repost, fetch the referenced post
-        if (post.repostId) {
-            const referencedPost = await db.collection('posts').findOne({ _id: post.repostId });
-            post.referencedPost = referencedPost;
-        }
-
         res.json({ success: true, data: post });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
