@@ -1,6 +1,6 @@
 # TrailTalk
 
-TrailTalk is a Node.js application that uses Express.js and MongoDB to manage posts. This project includes routes for creating, retrieving, updating, and deleting posts.
+TrailTalk is a Node.js application that uses Express.js and MongoDB to manage posts. This project includes routes for creating, retrieving, updating, and deleting posts, as well as upvoting posts.
 
 ## Prerequisites
 
@@ -44,7 +44,14 @@ TrailTalk is a Node.js application that uses Express.js and MongoDB to manage po
 ### Create a new post
 - **URL:** `/api/posts`
 - **Method:** `POST`
-- **Body:** JSON object representing the post
+- **Body:** FormData object representing the post
+  - `title`: string
+  - `content`: string
+  - `tags`: JSON string array
+  - `secretKey`: string
+  - `userId`: string
+  - `image`: file (optional)
+  - `imageUrl`: string (optional)
 - **Response:** Created post object
 
 ### Get all posts
@@ -60,13 +67,27 @@ TrailTalk is a Node.js application that uses Express.js and MongoDB to manage po
 ### Update a post by ID
 - **URL:** `/api/posts/:id`
 - **Method:** `PUT`
-- **Body:** JSON object representing the updated post
+- **Body:** FormData object representing the updated post
+  - `title`: string
+  - `content`: string
+  - `tags`: JSON string array
+  - `secretKey`: string
+  - `userId`: string
+  - `image`: file (optional)
+  - `imageUrl`: string (optional)
 - **Response:** Updated post object
 
 ### Delete a post by ID
 - **URL:** `/api/posts/:id`
 - **Method:** `DELETE`
+- **Body:** JSON object containing the secret key
+  - `secretKey`: string
 - **Response:** Success message
+
+### Upvote a post
+- **URL:** `/api/posts/:id/upvote`
+- **Method:** `POST`
+- **Response:** Updated post object with incremented upvotes
 
 ## Project Structure
 
